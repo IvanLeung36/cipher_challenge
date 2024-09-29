@@ -1,4 +1,5 @@
 from chi_squared import chi_square
+from collections import Counter
 frequencies = {
     "a": 8.167,
     "b": 1.492,
@@ -27,3 +28,24 @@ frequencies = {
     "y": 1.974,
     "z": 0.074
 } #Source: https://gist.github.com/evilpacket/5973230
+
+def monogram_fitness(text, ignore_spaces=True, use_reciprocal=True):
+    if ignore_spaces:
+        text = ''.join(filter(str.isalpha, text)).lower()
+
+    length = len(text)
+    
+    if length == 0:
+        return float('inf') if use_reciprocal else 0
+    
+    observed_frequency = Counter(text)
+    observed = [(observed_frequency[char] / length) * 100 for char in frequencies]
+    expected = [frequencies[char] for char in frequencies]
+    chi_s = chi_square(observed, expected)
+
+    if use_reciprocal:
+        return 1 / chi_s if chi_s != 0 else float('inf')
+    else:
+        return -chi_s
+fitness = monogram_fitness(input("Text: "))
+print(fitness)
